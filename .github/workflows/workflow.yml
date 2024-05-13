@@ -1,0 +1,25 @@
+name: notify-ghost-machine
+run-name: notify ghost machine to update its theme
+on: [push]
+jobs:
+  notify-ghost-host:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Create SSH key
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_PRIVATE_KEY" > ../private.key
+          sudo chmod 600 ../private.key
+        shell: bash
+        env:
+          SSH_PRIVATE_KEY: ${{secrets.GHOST_UPDATE_OPENSSH_PRIVATE_KEY}}
+          SSH_KEY_PATH: ${{ github.workspace }}/../private.key
+      - name: Notify remote server
+        run: >
+          ssh -p 60022 -i $SSH_KEY_PATH -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null 
+          ghost-update@mercedes.franzoni.eu systemctl start techandtheitaly-theme-sync
+          
+          shred ${SSH_KEY_PATH}
+        env:
+          SSH_KEY_PATH: ${{ github.workspace }}/../private.key
