@@ -17,9 +17,9 @@ jobs:
           SSH_KEY_PATH: ${{ github.workspace }}/../private.key
       - name: Notify remote server
         run: >
-          ssh -p 60022 -i $SSH_KEY_PATH -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null 
-          ghost-update@mercedes.franzoni.eu systemctl start techandtheitaly-theme-sync
+          ssh -i $SSH_KEY_PATH -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null 
+          ${{secrets.GHOST_UPDATE_SSH_URL}} systemctl start techandtheitaly-theme-sync
           
-          shred ${SSH_KEY_PATH}
+          shred -u ${SSH_KEY_PATH}
         env:
           SSH_KEY_PATH: ${{ github.workspace }}/../private.key
